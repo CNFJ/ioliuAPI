@@ -51,6 +51,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(582, 21);
             this.textBox1.TabIndex = 2;
+            this.textBox1.Text = "http://nsfwpicx.com/2020/04/15/1338.html#";
             // 
             // label1
             // 

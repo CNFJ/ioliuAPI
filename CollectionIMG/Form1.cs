@@ -101,7 +101,7 @@ namespace CollectionIMG
                     if (item.pics != null && item.pics.Count() != 0)
                     {
                         activity_window_Appent($"{item.pics.Count()}P {item.title}");
-                      //  DownPic(item);
+                        //  DownPic(item);
                     }
                 });
                 num++;
@@ -124,25 +124,61 @@ namespace CollectionIMG
             WebClient web = new WebClient();
             try
             {
-                string path = "./" + textBox1.Text.Trim();
+                string path = "./" + "df";
                 DirectoryInfo directoryInfo = new DirectoryInfo(path);
                 if (!directoryInfo.Exists)
                 {
                     directoryInfo.Create();
                 }
-                web.DownloadFile(list.imgLists[0].Url, path + "/" + list.imgLists[0].Url);
+                Regex reg = new Regex(@"/s.*jpg");
+                //Regex reg = new Regex(@"(?i)<img\b[^>]*?src=(['""]?)([^'""\s>]+)\1[^>]*>");
+                //  MatchCollection mc = reg.Matches(list.imgLists[0].Url);
+                //MessageBox.Show(mc[0].ToString().Replace("/",""));
+                // web.DownloadFile(list.imgLists[0].Url, @"D:\Code\C#\ioliuAPI\CollectionIMG\bin\Debug\df\1.jpg");
+                for (int i = 0; i < list.imgLists.Length; i++)
+                {
+                    MatchCollection mc = reg.Matches(list.imgLists[i].Url);
+                    string text = path + "/" + mc[0].ToString().Replace("/", "");
+                    if (!File.Exists(text))
+                    {
+                        try
+                        {
+                            activity_window_Appent(mc[0].ToString().Replace("/", ""));
+                            Thread thread = new Thread(()=>
+                            {
+                                if (this.InvokeRequired)
+                                {
+                                    this.Invoke((EventHandler)delegate
+                                    {
+                                        web.DownloadFile(list.imgLists[i].Url, text);
+                                    });
+                                }
+                            });
+                            thread.IsBackground = true;
+                            thread.Start();
+
+                        }
+                        catch (Exception ex)
+                        {
+                            // textBox2.Text = ex.Message.ToString();
+                        }
+                    }
+                }
+
                 //Parallel.ForEach(list.imgLists, delegate (ImgList pic)
                 //{
-                //    string text = path + "/" + pic.Url + ".png";
+                //    MatchCollection mc = reg.Matches(pic.Url);
+                //    string text = path + "/" + mc[0].ToString().Replace("/", "");
                 //    if (!File.Exists(text))
                 //    {
                 //        try
                 //        {
+
                 //            web.DownloadFile(pic.Url, text);
                 //        }
                 //        catch (Exception ex)
                 //        {
-                //           // textBox2.Text = ex.Message.ToString();
+                //            // textBox2.Text = ex.Message.ToString();
                 //        }
                 //    }
                 //});
@@ -187,7 +223,7 @@ namespace CollectionIMG
         //取图片链接
         private void button2_Click(object sender, EventArgs e)
         {
-            string html = GetHtmlCode("http://nsfwpicx.com/2020/04/14/1333.html", Encoding.GetEncoding("gb2312"));
+            string html = GetHtmlCode(textBox1.Text, Encoding.GetEncoding("gb2312"));
             Regex reg = new Regex(@"(?i)<img\b[^>]*?src=(['""]?)([^'""\s>]+)\1[^>]*>");
             MatchCollection mc = reg.Matches(html);
             textBox2.Clear();
@@ -201,7 +237,7 @@ namespace CollectionIMG
 
                 foreach (Match m in mc)
                 {
-                    lst.Add(new ImgList {  Url= m.Groups[2].Value }) ;
+                    lst.Add(new ImgList { Url = m.Groups[2].Value });
 
                     textBox2.Text += m.Groups[2].Value + "\r\n";
                     img++;
@@ -209,39 +245,62 @@ namespace CollectionIMG
                 array = lst.ToArray();
                 lst1.Add(new IMGurl { title = "1", imgLists = array });
                 array1 = lst1.ToArray();
-                int num = 1;
-                while (true)
-                {
-                    //string data = Utility.BulidData(sellerId, num);
-                    //ResponseModel imgList = CollectionService.GetImgList(token, data, cookie);
+                IMGurl il = new IMGurl();
+                il.imgLists = array;
+                il.title = "df";
+                //this.Invoke((Action)delegate
+                //{
+                //    DownPic(il);
+                //});
+                Thread thread = new Thread(() =>
+{
+    if (this.IsHandleCreated)    //判断线程是否创建完成
 
-                    if (array.Count() < 1)
-                    {
-                        break;
-                    }
-                    ParallelLoopResult result = Parallel.ForEach(array1, new ParallelOptions
-                    {
-                        MaxDegreeOfParallelism = 5
-                    }, delegate (IMGurl item)
-                    {
-                       
-                            activity_window_Appent($"ran");
-                            DownPic(item);
-                        
-                    });
-                    num++;
-                    Thread.Sleep(300);
-                }
-                if (num > 1)
-                {
-                    set_startBtn_state(state: true);
-                    MessageBox.Show("没有了！");
-                }
-                else
-                {
-                    set_startBtn_state(state: true);
-                    MessageBox.Show("暂无内容哦 “万千的世界，怎么会没有你的真爱呢…”");
-                }
+        // 以下为委托的几种写法
+
+        this.Invoke((EventHandler)delegate
+        {
+            DownPic(il);
+        });
+}
+
+);
+                thread.IsBackground = true;
+                thread.Start();
+                //int num = 1;
+                //while (true)
+                //{
+                //    //string data = Utility.BulidData(sellerId, num);
+                //    //ResponseModel imgList = CollectionService.GetImgList(token, data, cookie);
+
+                //    if (array.Count() < 1)
+                //    {
+                //        break;
+                //    }
+
+                //    ParallelLoopResult result = Parallel.ForEach(array1, new ParallelOptions
+                //    {
+                //        MaxDegreeOfParallelism = 5
+                //    }, delegate (IMGurl item)
+                //    {
+
+                //            activity_window_Appent($"ran");
+                //            DownPic(item);
+
+                //    });
+                //    num++;
+                //    Thread.Sleep(300);
+                //}
+                //if (num > 1)
+                //{
+                //    set_startBtn_state(state: true);
+                //    MessageBox.Show("没有了！");
+                //}
+                //else
+                //{
+                //    set_startBtn_state(state: true);
+                //    MessageBox.Show("暂无内容哦 “万千的世界，怎么会没有你的真爱呢…”");
+                //}
             }
             else
             {
