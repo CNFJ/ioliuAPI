@@ -14,7 +14,7 @@ namespace ioliu.Data
                
         //}
 
-      public IoliuContext(DbContextOptions<DbContext> options):base(options)
+      public IoliuContext(DbContextOptions<IoliuContext> options):base(options)
         {
 
         }

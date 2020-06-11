@@ -33,6 +33,7 @@ namespace admin.ioliu.net.Controllers
                 UserName="df",
                 PassWord="df727123."
             };
+                _context.systemUsers.Add(systemUsers);
             }
             var df = _context.systemUsers.ToList();
             
