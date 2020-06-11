@@ -1,10 +1,23 @@
-﻿@{
+﻿@model ioliu.Domain.SystemUsers;
+@{
     ViewData["Title"] = "Home Page";
+    
 }
+
 <link rel="stylesheet" href="./editor.md/css/editormd.css" />
 
 <div class="text-center" style="width:100%;height: 100%">
+    <table>
+        <tr>
+            <td>姓名</td>
+            <td>@Html.DisplayFor(model => model.UserName)</td>
+        </tr>
+        <tr>
+            <td>密码</td>
+            <td>@Html.DisplayFor(model => model.PassWord)</td>
+        </tr>
 
+    </table>
     <div id="editor" >
         <textarea style="display:none;" id="blog_content">  </textarea>
     </div>
