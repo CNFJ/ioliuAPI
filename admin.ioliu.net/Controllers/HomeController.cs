@@ -36,7 +36,7 @@ namespace admin.ioliu.net.Controllers
                 _context.systemUsers.Add(systemUsers);
             }
             var df = _context.systemUsers.ToList();
-            
+            ViewBag.vuw = df;
             return View(df);
         }
 
